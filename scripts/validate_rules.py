@@ -122,18 +122,18 @@ def validate(data_dir: str | Path) -> list[Problem]:
             err("E2", where, "resident and resident_entity_type match none of the evidence events")
         if g["resident_entity_type"] == "state" and found and not any(x["resident_entity_type"] == "state" for x in found):
             err("E3", where, "claims a whole state as resident, but every evidence event is scoped to a firm, sector or asset")
+        span = win.get(g["window_id"])
+        for x in found:
+            if x["sphere"] != g["sphere"]:
+                err("E4", where, f"evidence event {x['event_id']} is in {x['sphere']}, not {g['sphere']}")
+            day = event_day(x)
+            if span and day and day > span[1]:
+                err("E4", where, f"evidence event {x['event_id']} ({day}) is after window {g['window_id']} ends ({span[1]})")
         if g["role"] == "controller":
             if not _all_proofs(g):
                 err("P1", where, "role is controller, so proof_C1, proof_C2 and proof_C3 must all be 1")
             if not cited:
                 err("P1", where, "role is controller, so evidence_event_ids must name at least one event")
-            span = win.get(g["window_id"])
-            for x in found:
-                if x["sphere"] != g["sphere"]:
-                    err("P1", where, f"evidence event {x['event_id']} is in {x['sphere']}, not {g['sphere']}")
-                day = event_day(x)
-                if span and day and day > span[1]:
-                    err("P1", where, f"evidence event {x['event_id']} ({day}) is after window {g['window_id']} ends ({span[1]})")
 
     # Register
     for r in register:

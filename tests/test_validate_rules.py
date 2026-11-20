@@ -120,11 +120,14 @@ class EachRuleCanFail(unittest.TestCase):
     def test_P1_controller_edge_without_evidence(self):
         self.check("P1", "ERROR", "edges", "role_edge_id", "R0001", evidence_event_ids="")
 
-    def test_P1_evidence_from_another_sphere(self):
-        self.check("P1", "ERROR", "edges", "role_edge_id", "R0001", evidence_event_ids="E0002|E0004")
+    def test_E4_evidence_from_another_sphere(self):
+        self.check("E4", "ERROR", "edges", "role_edge_id", "R0001", evidence_event_ids="E0002|E0004")
 
-    def test_P1_evidence_after_the_edges_window(self):
-        self.check("P1", "ERROR", "edges", "role_edge_id", "R0004", evidence_event_ids="E0005|E0006")
+    def test_E4_evidence_after_the_edges_window(self):
+        self.check("E4", "ERROR", "edges", "role_edge_id", "R0004", evidence_event_ids="E0005|E0006")
+
+    def test_E4_applies_to_candidate_edges_too(self):
+        self.check("E4", "ERROR", "edges", "role_edge_id", "R0003", evidence_event_ids="E0004|E0002")
 
     def test_F1_controller_without_promoted_window(self):
         self.check("F1", "ERROR", "register", "sphere", "S5_Tech_Compute", promoted_window="")

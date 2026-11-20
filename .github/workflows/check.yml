@@ -1,0 +1,30 @@
+name: Check
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install the schema checker
+        run: pip install -r requirements.txt
+
+      - name: Structure (Frictionless)
+        run: frictionless validate datapackage.json
+
+      - name: Ledger rules
+        run: python3 scripts/validate_rules.py data
+
+      - name: Tests
+        run: python3 -m unittest -v

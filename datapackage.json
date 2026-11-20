@@ -393,7 +393,7 @@
           {
             "name": "target_type",
             "type": "string",
-            "description": "Kind of target.",
+            "description": "Kind of target. 'institution' is for S6 acts aimed at a governing body rather than the state.",
             "constraints": {
               "required": true,
               "enum": [
@@ -401,6 +401,7 @@
                 "sector",
                 "asset",
                 "policy",
+                "institution",
                 "other"
               ]
             }
@@ -764,7 +765,8 @@
             "type": "string",
             "description": "Pipe-separated event ids behind the edge.",
             "constraints": {
-              "pattern": "^E\\d{4}(\\|E\\d{4})*$"
+              "pattern": "^E\\d{4}(\\|E\\d{4})*$",
+              "required": true
             }
           }
         ],
@@ -858,10 +860,7 @@
           {
             "name": "latest_evidence_window",
             "type": "string",
-            "description": "Latest window with evidence.",
-            "constraints": {
-              "required": true
-            }
+            "description": "Latest window with evidence."
           },
           {
             "name": "confidence",
