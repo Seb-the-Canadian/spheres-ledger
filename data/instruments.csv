@@ -4,7 +4,7 @@ F1 kinetic_force,raid_or_seizure,S1_Security,Limited operation to seize assets/p
 F1 kinetic_force,strike_and_capture,S1_Security,Force applied with detention/capture of leadership or personnel.,
 F2 access_denial,airspace_or_overflight_denial,S1_Security,Denial of air transit rights / closure announcements with enforcement signals.,
 F2 access_denial,basing_or_transit_denial,S1_Security,Refusal/withdrawal of basing refuelling or transit permissions.,
-F2 access_denial,port_access_denial,S4_Energy_Logistics,Denial of port entry/servicing.,
+F2 access_denial,port_access_denial,S4_Energy_Logistics,Denial of port entry/servicing.,Also usable in S1_Security when the logic is military transit denial.
 F3 security_assistance,security_assistance_halt,S1_Security,Explicit withholding/stop of arms aid ISR or training.,
 F3 security_assistance,security_assistance_release,S1_Security,Explicit release/approval of arms aid ISR or training.,
 F4 sanctions_financial,sanctions_designation,S2_Finance,Listing/designation asset freezes or transaction bans.,
@@ -20,7 +20,7 @@ F6 tariffs_and_border,tariff_rate_increase,S3_Trade,Increase in tariff rate on e
 F7 trade_remedies,AD_CVD_definitive,S3_Trade,Definitive duties adopted (multi-year typical).,
 F7 trade_remedies,AD_CVD_provisional,S3_Trade,Provisional anti-dumping/countervailing duties.,
 F7 trade_remedies,safeguard_measure,S3_Trade,Temporary safeguard action.,
-F8 energy_logistics_controls,energy_import_ban,S4_Energy_Logistics,Prohibition on import of specific energy commodities or products; may be phased or scheduled with staggered compliance deadlines.,
+F8 energy_logistics_controls,energy_import_ban,S4_Energy_Logistics,Prohibition on import of specific energy commodities or products; may be phased or scheduled with staggered compliance deadlines.,Distinct from shipping and insurance restrictions: it applies to the commodity itself.
 F8 energy_logistics_controls,oil_price_cap_dynamic,S4_Energy_Logistics,Price cap mechanism with moving formula / adjustment rule.,
 F8 energy_logistics_controls,shipping_insurance_restriction,S4_Energy_Logistics,Restriction on shipping insurance/services linked to compliance.,
 F8 energy_logistics_controls,tanker_seizure_or_interdiction,S4_Energy_Logistics,Physical interdiction/seizure of vessel/cargo.,

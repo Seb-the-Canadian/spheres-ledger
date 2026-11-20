@@ -20,6 +20,9 @@ same checks that run here run on your change automatically:
 - `python3 scripts/validate_rules.py data`
 - `python3 -m unittest`
 
+On a first contribution, GitHub asks the maintainer to approve the run
+before the checks start.
+
 A passing check means the change keeps the rules. It doesn't mean the change
 is right. A person reads every proposal and decides.
 

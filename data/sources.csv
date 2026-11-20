@@ -4,5 +4,5 @@ SRC02,Example Gazette,news,Invented example: report on the licence terms for Fir
 SRC03,Example Gazette,news,Invented example: vendors stop supporting systems in Resident Y,2030-03-06,https://example.org/gazette/vendor-cutoff
 SRC04,Example Wire,news,Invented example: shipments to Resident Y held; replacement costs reported,2030-04-21,https://example.org/wire/shipments-held
 SRC05,Controller Z Trade Office,primary,Invented example: designation notice covering Sector S,2030-05-02,https://example.org/trade-office/sector-s
-SRC06,Example Wire,news,Invented example: tariff on goods from Resident Y; importers switch suppliers,2030-06-02,https://example.org/wire/tariff
-SRC07,Example Gazette,news,Invented example: court orders Controller Z to rescind the tariff,2030-10-02,https://example.org/gazette/court-rescission
+SRC06,Example Wire,news,Invented example: tariff on goods from Resident Y; importers switch suppliers and imports fall,2030-06-02,https://example.org/wire/tariff
+SRC07,Example Gazette,news,Invented example: re-routed goods from Resident Y keep arriving despite tighter rules of origin,2030-10-02,https://example.org/gazette/re-routing

@@ -45,15 +45,15 @@ are right: that is what sources, review and challenge are for.
 |---|---|---|
 | D1 | Every event has `pub_date`. A blank `event_date` needs a reason in `notes` | Schema (`pub_date`) and Checker (ERROR) |
 | D2 | A filled `event_date` needs `event_date_confidence` and `event_date_basis` | Checker (ERROR) |
-| D3 | `event_date` falls inside its window, inclusive. When `event_date` is blank, `pub_date` places the event and `event_date_confidence` must be `Low` | Checker (ERROR) |
+| D3 | `event_date` falls inside its window, inclusive. When `event_date` is blank, `pub_date` places the event, `event_date_confidence` must be `Low` and `event_date_basis` must be `other` | Checker (ERROR) |
 | W1 | Windows have start on or before end, and don't overlap. "Earlier" and "later" always mean by date, not by id | Checker (ERROR) |
 
 ## E. Entity scoping
 
 | Id | Rule | Enforced by |
 |---|---|---|
-| E1 | Every event names `resident_entity_type` and `resident_entity_name`. A non-state resident names its `resident_parent_state` when it is clearly tied to one; if it is left blank, `notes` says why | Schema (the first two) and Checker (WARN) |
-| E2 | An edge's `resident` and `resident_entity_type` match at least one of its evidence events | Checker (ERROR) |
+| E1 | Every event names `resident_entity_type` and `resident_entity_name`. A non-state resident names its `resident_parent_state` when it is clearly tied to one; if it is left blank, `notes` says why. The same holds for an edge, whose reason is in its evidence event's `notes` | Schema (the first two) and Checker (WARN) |
+| E2 | An edge's `resident` and `resident_entity_type` match at least one of its evidence events. Where both give a `resident_parent_state`, they agree | Checker (ERROR) |
 | E4 | Every edge's evidence events are in the edge's sphere, and on or before the end of the edge's window | Checker (ERROR) |
 | E3 | No state-level overreach: an edge claims a whole state as resident only when at least one evidence event is scoped to that state | Checker (ERROR) |
 
@@ -65,7 +65,7 @@ are right: that is what sources, review and challenge are for.
 | P2 | Each proof rests on what the evidence events actually show, not on how the edge is labelled | Person |
 | F1 | A register row with `status = controller` has `promoted_window` and `promotion_basis_event_ids`, and an edge for that controller and sphere with all three proofs cites at least one of those events | Checker (ERROR) |
 | F2 | `candidate` is used where C1 is evidenced but C2 or C3 is not. A candidate whose edge already meets all three tests is flagged for a person to decide | Checker (WARN) and Person |
-| F3 | `contested` follows a promotion (it has `promoted_window` and basis events). It's used when a later window shows compliance weakening or the effect fading, with the events and a note that show it | Checker (ERROR) and Person |
+| F3 | `contested` follows a promotion: it has `promoted_window` and basis events, and a controller edge with all three proofs cites at least one of them. It's used when a later window shows compliance weakening or the effect fading, with the events and a note that show it | Checker (ERROR) and Person |
 
 ## G. Sources
 
@@ -81,6 +81,8 @@ are right: that is what sources, review and challenge are for.
 | H1 | Observable flags O1–O5 are `0` or `1` | Schema |
 | H2 | `summary` is neutral. `notes` explains ambiguity, inference or scope limits, and speculation is never unattributed | Person |
 | H3 | A suggestion from an AI or any other tool becomes an event only after a person has checked it against a source | Person |
+| H4 | `notes` explains a `Low` date confidence, an `other` date basis, and any observable flag left at `0` where the evidence is doubtful | Person |
+| H5 | `target_type = institution` is used only in `S6_Legitimacy`, for an act aimed at a governing body rather than the state | Person |
 
 ## Before a change is merged
 

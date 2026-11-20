@@ -1,4 +1,4 @@
 controller,sphere,status,first_seen_window,promoted_window,demoted_window,promotion_basis_event_ids,latest_evidence_window,confidence,notes
 Controller X,S5_Tech_Compute,controller,W1,W1,,E0002|E0003,W1,High,
 Controller Z,S2_Finance,candidate,W1,,,,W1,Low,Only C1 is evidenced.
-Controller Z,S3_Trade,contested,W1,W1,,E0005,W2,Med,Promoted in W1; a court-ordered rescission in W2 (E0006) weakens the hold.
+Controller Z,S3_Trade,contested,W1,W1,,E0005,W2,Med,"Promoted in W1; in W2 re-routing defeats the tariff and imports recover (E0006), so the hold weakens."

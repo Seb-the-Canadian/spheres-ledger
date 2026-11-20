@@ -19,7 +19,7 @@ The first public version.
   of it on every change.
 
 ### Where it came from
-A private working ledger (v0.5), kept since January 2026. v1 states its
+A private working ledger (v0.5). v1 states its
 rules as its docs mean them, with these choices:
 - An edge's `role` describes the controller side only: `candidate`,
   `controller` or `contested`. The private ledger's `mixed` and `resident`

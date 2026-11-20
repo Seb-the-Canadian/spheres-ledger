@@ -63,7 +63,7 @@ still states its own sphere.
 |---|---|---|
 | `airspace_or_overflight_denial` | `S1_Security` | Denial of air transit rights, or closure announcements backed by signs of enforcement. |
 | `basing_or_transit_denial` | `S1_Security` | Refusal or withdrawal of basing, refuelling or transit permission. |
-| `port_access_denial` | `S4_Energy_Logistics` | Denial of port entry or servicing. |
+| `port_access_denial` | `S4_Energy_Logistics` | Denial of port entry or servicing. Also usable in `S1_Security` when the logic is military transit denial. |
 
 ### F3 security_assistance
 
@@ -112,7 +112,7 @@ still states its own sphere.
 | `oil_price_cap_dynamic` | `S4_Energy_Logistics` | A price cap with a moving formula or adjustment rule. |
 | `shipping_insurance_restriction` | `S4_Energy_Logistics` | Restrictions on shipping insurance or services, tied to compliance. |
 | `tanker_seizure_or_interdiction` | `S4_Energy_Logistics` | Physical interdiction or seizure of a vessel or cargo. |
-| `energy_import_ban` | `S4_Energy_Logistics` | A ban on importing specific energy commodities or products. It may be phased in, with staggered compliance deadlines. |
+| `energy_import_ban` | `S4_Energy_Logistics` | A ban on importing specific energy commodities or products. It may be phased in, with staggered compliance deadlines. Distinct from shipping and insurance restrictions: it applies to the commodity itself. |
 
 ### F9 export_controls
 

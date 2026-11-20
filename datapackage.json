@@ -165,7 +165,7 @@
             "description": "Pipe-separated sphere labels.",
             "constraints": {
               "required": true,
-              "pattern": "^S[1-6]_[A-Za-z_]+(\\|S[1-6]_[A-Za-z_]+)*$"
+              "pattern": "^(S1_Security|S2_Finance|S3_Trade|S4_Energy_Logistics|S5_Tech_Compute|S6_Legitimacy)(\\|(S1_Security|S2_Finance|S3_Trade|S4_Energy_Logistics|S5_Tech_Compute|S6_Legitimacy))*$"
             }
           },
           {

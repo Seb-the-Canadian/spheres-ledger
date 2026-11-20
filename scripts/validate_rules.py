@@ -32,7 +32,8 @@ class Problem:
 
 
 def _read(data_dir: Path, name: str) -> list[dict[str, str]]:
-    with open(data_dir / f"{name}.csv", newline="", encoding="utf-8") as f:
+    # utf-8-sig: a file saved by a spreadsheet may start with a byte-order mark.
+    with open(data_dir / f"{name}.csv", newline="", encoding="utf-8-sig") as f:
         return [{k: (v or "").strip() for k, v in row.items()} for row in csv.DictReader(f)]
 
 
@@ -98,6 +99,8 @@ def validate(data_dir: str | Path) -> list[Problem]:
                 err("D1", where, "event_date is blank, so notes must say why")
             if e["event_date_confidence"] != "Low":
                 err("D3", where, "event_date is blank, so the window rests on pub_date and event_date_confidence must be Low")
+            if e["event_date_basis"] != "other":
+                err("D3", where, "event_date is blank, so event_date_basis must be other")
         else:
             if not e["event_date_confidence"] or not e["event_date_basis"]:
                 err("D2", where, "event_date is set, so event_date_confidence and event_date_basis are required")
@@ -120,8 +123,17 @@ def validate(data_dir: str | Path) -> list[Problem]:
             x["resident_entity_name"] == g["resident"] and x["resident_entity_type"] == g["resident_entity_type"] for x in found
         ):
             err("E2", where, "resident and resident_entity_type match none of the evidence events")
+        for x in found:
+            if (x["resident_entity_name"] == g["resident"] and x["resident_entity_type"] == g["resident_entity_type"]
+                    and x["resident_parent_state"] and g["resident_parent_state"]
+                    and x["resident_parent_state"] != g["resident_parent_state"]):
+                err("E2", where, f"resident_parent_state differs from evidence event {x['event_id']} ({x['resident_parent_state']})")
         if g["resident_entity_type"] == "state" and found and not any(x["resident_entity_type"] == "state" for x in found):
             err("E3", where, "claims a whole state as resident, but every evidence event is scoped to a firm, sector or asset")
+        if g["resident_entity_type"] != "state" and not g["resident_parent_state"] and not any(
+            x["notes"] for x in found if x["resident_entity_name"] == g["resident"]
+        ):
+            warn("E1", where, "a non-state resident with no resident_parent_state should say why in its evidence event's notes")
         span = win.get(g["window_id"])
         for x in found:
             if x["sphere"] != g["sphere"]:
@@ -157,6 +169,8 @@ def validate(data_dir: str | Path) -> list[Problem]:
         elif r["status"] == "contested":
             if not r["promoted_window"] or not basis:
                 err("F3", where, "contested follows a promotion, so promoted_window and promotion_basis_event_ids are required")
+            if not any(set(_ids(g["evidence_event_ids"])) & set(basis) for g in qualifying):
+                err("F3", where, "contested follows a promotion, but no controller edge with all three proofs cites the promotion basis events")
 
     return out
 

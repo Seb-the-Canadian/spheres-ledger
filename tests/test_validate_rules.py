@@ -66,6 +66,29 @@ class GoodData(unittest.TestCase):
         problems = validate_rules.validate(ROOT / "data")
         self.assertEqual(problems, [], "\n".join(map(str, problems)))
 
+    def assertNoErrors(self, b):
+        got = b.problems()
+        self.assertEqual([p for p in got if p.severity == "ERROR"], [], "\n".join(map(str, got)))
+
+    def test_window_edges_are_inclusive(self):
+        for day in ("2030-01-01", "2030-06-30"):
+            with self.subTest(day=day), Broken() as b:
+                b.edit("events", "event_id", "E0005", event_date=day)
+                self.assertNoErrors(b)
+
+    def test_byte_order_mark_is_read(self):
+        with Broken() as b:
+            path = b.dir / "events.csv"
+            path.write_text("\ufeff" + path.read_text(encoding="utf-8"), encoding="utf-8")
+            self.assertEqual(b.problems(), [])
+
+    def test_cli_warning_alone_exits_0(self):
+        with Broken() as b:
+            b.edit("events", "event_id", "E0004", notes="")
+            out = subprocess.run([sys.executable, str(ROOT / "scripts/validate_rules.py"), str(b.dir)], capture_output=True, text=True)
+        self.assertEqual(out.returncode, 0, out.stdout + out.stderr)
+        self.assertIn("WARN E1", out.stdout)
+
     def test_cli_exit_codes(self):
         ok = subprocess.run([sys.executable, str(ROOT / "scripts/validate_rules.py"), str(ROOT / "data")], capture_output=True, text=True)
         self.assertEqual(ok.returncode, 0, ok.stdout + ok.stderr)
@@ -94,7 +117,7 @@ class EachRuleCanFail(unittest.TestCase):
         self.check("B5", "ERROR", "events", "event_id", "E0002", thread_ids="T01|T99")
 
     def test_D1_blank_event_date_without_notes(self):
-        self.check("D1", "ERROR", "events", "event_id", "E0002", event_date="", event_date_confidence="Low", notes="")
+        self.check("D1", "ERROR", "events", "event_id", "E0002", event_date="", event_date_confidence="Low", event_date_basis="other", notes="")
 
     def test_D2_event_date_without_confidence(self):
         self.check("D2", "ERROR", "events", "event_id", "E0002", event_date_confidence="")
@@ -103,10 +126,13 @@ class EachRuleCanFail(unittest.TestCase):
         self.check("D3", "ERROR", "events", "event_id", "E0002", event_date="2030-09-01")
 
     def test_D3_blank_event_date_needs_low_confidence(self):
-        self.check("D3", "ERROR", "events", "event_id", "E0002", event_date="", event_date_confidence="High", notes="Date not reported.")
+        self.check("D3", "ERROR", "events", "event_id", "E0002", event_date="", event_date_confidence="High", event_date_basis="other", notes="Date not reported.")
 
     def test_E1_non_state_resident_without_parent_or_note(self):
-        self.check("E1", "WARN", "events", "event_id", "E0004", notes="")
+        with Broken() as b:
+            b.edit("events", "event_id", "E0004", notes="")
+            got = b.problems()
+        self.assertIn("events.csv E0004", " ".join(str(p) for p in got if p.rule == "E1" and p.severity == "WARN"), "\n".join(map(str, got)))
 
     def test_E2_edge_resident_matches_no_evidence_event(self):
         self.check("E2", "ERROR", "edges", "role_edge_id", "R0001", resident="Resident W")
@@ -140,6 +166,46 @@ class EachRuleCanFail(unittest.TestCase):
 
     def test_F3_contested_without_a_promotion(self):
         self.check("F3", "ERROR", "register", "sphere", "S3_Trade", promoted_window="")
+
+    def test_D3_blank_event_date_needs_basis_other(self):
+        self.check("D3", "ERROR", "events", "event_id", "E0002", event_date="", event_date_confidence="Low", notes="Date not reported.")
+
+    def test_D3_blank_event_date_places_by_pub_date(self):
+        self.check("D3", "ERROR", "events", "event_id", "E0002", event_date="", event_date_confidence="Low", event_date_basis="other", notes="Date not reported.", pub_date="2030-08-01")
+
+    def test_E1_edge_non_state_resident_without_parent_or_note(self):
+        with Broken() as b:
+            b.edit("edges", "role_edge_id", "R0002", resident_parent_state="")
+            b.edit("events", "event_id", "E0001", notes="")
+            got = b.problems()
+        self.assertIn("edges.csv R0002", " ".join(str(p) for p in got if p.rule == "E1" and p.severity == "WARN"), "\n".join(map(str, got)))
+
+    def test_E2_edge_resident_type_matches_no_evidence_event(self):
+        self.check("E2", "ERROR", "edges", "role_edge_id", "R0001", resident_entity_type="firm", resident_parent_state="Resident Y")
+
+    def test_F1_controller_without_basis_events(self):
+        self.check("F1", "ERROR", "register", "sphere", "S5_Tech_Compute", promotion_basis_event_ids="")
+
+    def test_F1_basis_events_cited_by_no_qualifying_edge(self):
+        self.check("F1", "ERROR", "register", "sphere", "S5_Tech_Compute", promotion_basis_event_ids="E0001")
+
+    def test_F3_contested_without_basis_events(self):
+        self.check("F3", "ERROR", "register", "sphere", "S3_Trade", promotion_basis_event_ids="")
+
+    def test_W1_start_after_end(self):
+        self.check("W1", "ERROR", "windows", "window_id", "W2", start_date="2031-01-01")
+
+    def test_W1_windows_sharing_a_day_overlap(self):
+        self.check("W1", "ERROR", "windows", "window_id", "W2", start_date="2030-06-30")
+
+    def test_F3_contested_needs_an_earlier_qualifying_edge(self):
+        with Broken() as b:
+            b.edit("edges", "role_edge_id", "R0004", role="candidate", proof_C2="0", proof_C3="0")
+            got = b.problems()
+        self.assertIn("F3", rules(got, "ERROR"), "\n".join(map(str, got)))
+
+    def test_E2_edge_parent_state_differs_from_its_evidence(self):
+        self.check("E2", "ERROR", "edges", "role_edge_id", "R0002", resident_parent_state="Other State")
 
     def test_W1_overlapping_windows(self):
         self.check("W1", "ERROR", "windows", "window_id", "W2", start_date="2030-06-01")

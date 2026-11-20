@@ -3,4 +3,4 @@ R0001,W1,S5_Tech_Compute,Controller X,Resident Y,state,,controller,High,1,1,1,Fe
 R0002,W1,S5_Tech_Compute,Controller X,Firm Q's plant,state_via_firm_asset,Parent State P,candidate,Med,1,0,0,,E0001
 R0003,W1,S2_Finance,Controller Z,Sector S,sector,,candidate,Low,1,0,0,,E0004
 R0004,W1,S3_Trade,Controller Z,Resident Y,state,,controller,Med,1,1,1,Some importers route through third countries at extra cost.,E0005
-R0005,W2,S3_Trade,Controller Z,Resident Y,state,,contested,Med,1,0,0,The court-ordered rescission removes the tariff.,E0006
+R0005,W2,S3_Trade,Controller Z,Resident Y,state,,contested,Med,1,0,0,Cheap re-routing through third countries defeats the tariff.,E0006
