@@ -1,0 +1,2 @@
+thread_id,name,description,spheres_involved,windows_active,notes
+T01,example_compute_and_trade_pressure,Invented example: a run of measures by Controller X and Controller Z touching Resident Y across several spheres.,S2_Finance|S3_Trade|S5_Tech_Compute,W1|W2,A context label only; it creates no edges.

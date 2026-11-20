@@ -1,0 +1,8 @@
+source_key,publisher,doc_type,title_or_description,pub_date,url_or_citation_note
+SRC01,Controller X Official Register,primary,Invented example: annual licence notice covering Firm Q's plant,2030-02-10,https://example.org/register/2030-licence
+SRC02,Example Gazette,news,Invented example: report on the licence terms for Firm Q's plant,2030-02-11,https://example.org/gazette/firm-q-licence
+SRC03,Example Gazette,news,Invented example: vendors stop supporting systems in Resident Y,2030-03-06,https://example.org/gazette/vendor-cutoff
+SRC04,Example Wire,news,Invented example: shipments to Resident Y held; replacement costs reported,2030-04-21,https://example.org/wire/shipments-held
+SRC05,Controller Z Trade Office,primary,Invented example: designation notice covering Sector S,2030-05-02,https://example.org/trade-office/sector-s
+SRC06,Example Wire,news,Invented example: tariff on goods from Resident Y; importers switch suppliers,2030-06-02,https://example.org/wire/tariff
+SRC07,Example Gazette,news,Invented example: court orders Controller Z to rescind the tariff,2030-10-02,https://example.org/gazette/court-rescission

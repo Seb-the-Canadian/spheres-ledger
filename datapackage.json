@@ -1,0 +1,926 @@
+{
+  "name": "spheres-ledger",
+  "title": "Spheres ledger",
+  "version": "1.0.0",
+  "description": "A schema for reading power sphere by sphere: who can constrain whom, in which domain, and on what evidence. The data here is invented, to show the structure.",
+  "homepage": "https://github.com/CognitiveArchitecture/spheres-ledger",
+  "licenses": [
+    {
+      "name": "CC-BY-4.0",
+      "title": "Creative Commons Attribution 4.0",
+      "path": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  ],
+  "contributors": [
+    {
+      "title": "Seb Lathangue",
+      "role": "author"
+    }
+  ],
+  "resources": [
+    {
+      "name": "windows",
+      "path": "data/windows.csv",
+      "description": "Time windows. Events, edges and register rows belong to a window; 'earlier' always means by date.",
+      "schema": {
+        "fields": [
+          {
+            "name": "window_id",
+            "type": "string",
+            "description": "Stable window id, e.g. W1.",
+            "constraints": {
+              "required": true,
+              "pattern": "^W\\d+$"
+            }
+          },
+          {
+            "name": "start_date",
+            "type": "date",
+            "description": "First day of the window (inclusive).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "end_date",
+            "type": "date",
+            "description": "Last day of the window (inclusive).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "notes",
+            "type": "string",
+            "description": "Optional notes."
+          }
+        ],
+        "primaryKey": [
+          "window_id"
+        ]
+      },
+      "profile": "tabular-data-resource",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "encoding": "utf-8"
+    },
+    {
+      "name": "instruments",
+      "path": "data/instruments.csv",
+      "description": "The fixed vocabulary of instruments. An event may only use a family and class listed here.",
+      "schema": {
+        "fields": [
+          {
+            "name": "instrument_family",
+            "type": "string",
+            "description": "Family, e.g. 'F9 export_controls'.",
+            "constraints": {
+              "required": true,
+              "pattern": "^F\\d+ [a-z_]+$"
+            }
+          },
+          {
+            "name": "instrument_class",
+            "type": "string",
+            "description": "Class within the family.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "default_sphere",
+            "type": "string",
+            "description": "The sphere the class usually belongs to.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "S1_Security",
+                "S2_Finance",
+                "S3_Trade",
+                "S4_Energy_Logistics",
+                "S5_Tech_Compute",
+                "S6_Legitimacy"
+              ]
+            }
+          },
+          {
+            "name": "definition",
+            "type": "string",
+            "description": "What the instrument is.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "notes",
+            "type": "string",
+            "description": "Optional notes."
+          }
+        ],
+        "primaryKey": [
+          "instrument_family",
+          "instrument_class"
+        ]
+      },
+      "profile": "tabular-data-resource",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "encoding": "utf-8"
+    },
+    {
+      "name": "threads",
+      "path": "data/threads.csv",
+      "description": "Cross-sphere context labels. A thread never creates an edge or affects promotion.",
+      "schema": {
+        "fields": [
+          {
+            "name": "thread_id",
+            "type": "string",
+            "description": "Stable thread id, e.g. T01.",
+            "constraints": {
+              "required": true,
+              "pattern": "^T\\d{2}$"
+            }
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "description": "Short snake_case label.",
+            "constraints": {
+              "required": true,
+              "pattern": "^[a-z0-9_]+$"
+            }
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "description": "What the thread is.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "spheres_involved",
+            "type": "string",
+            "description": "Pipe-separated sphere labels.",
+            "constraints": {
+              "required": true,
+              "pattern": "^S[1-6]_[A-Za-z_]+(\\|S[1-6]_[A-Za-z_]+)*$"
+            }
+          },
+          {
+            "name": "windows_active",
+            "type": "string",
+            "description": "Pipe-separated window ids.",
+            "constraints": {
+              "required": true,
+              "pattern": "^W\\d+(\\|W\\d+)*$"
+            }
+          },
+          {
+            "name": "notes",
+            "type": "string",
+            "description": "Optional notes."
+          }
+        ],
+        "primaryKey": [
+          "thread_id"
+        ]
+      },
+      "profile": "tabular-data-resource",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "encoding": "utf-8"
+    },
+    {
+      "name": "sources",
+      "path": "data/sources.csv",
+      "description": "Documented sources. Every event cites at least one.",
+      "schema": {
+        "fields": [
+          {
+            "name": "source_key",
+            "type": "string",
+            "description": "Stable source key.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "publisher",
+            "type": "string",
+            "description": "Who published it.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "doc_type",
+            "type": "string",
+            "description": "Kind of document.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "news",
+                "primary",
+                "primary+news",
+                "dataset",
+                "other"
+              ]
+            }
+          },
+          {
+            "name": "title_or_description",
+            "type": "string",
+            "description": "Title, or a clear description.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "pub_date",
+            "type": "date",
+            "description": "Publication date.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "url_or_citation_note",
+            "type": "string",
+            "description": "A stable locator: a URL, or a clear citation note.",
+            "constraints": {
+              "required": true
+            }
+          }
+        ],
+        "primaryKey": [
+          "source_key"
+        ]
+      },
+      "profile": "tabular-data-resource",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "encoding": "utf-8"
+    },
+    {
+      "name": "events",
+      "path": "data/events.csv",
+      "description": "Recorded events: one row per action, tagged by sphere, instrument and window, with its sources.",
+      "schema": {
+        "fields": [
+          {
+            "name": "event_id",
+            "type": "string",
+            "description": "Stable event id, E####.",
+            "constraints": {
+              "required": true,
+              "pattern": "^E\\d{4}$"
+            }
+          },
+          {
+            "name": "window_id",
+            "type": "string",
+            "description": "The window that contains event_date (or pub_date when event_date is blank).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "event_date",
+            "type": "date",
+            "description": "When the event happened."
+          },
+          {
+            "name": "event_date_confidence",
+            "type": "string",
+            "description": "Confidence in event_date.",
+            "constraints": {
+              "enum": [
+                "High",
+                "Med",
+                "Low"
+              ]
+            }
+          },
+          {
+            "name": "event_date_basis",
+            "type": "string",
+            "description": "How event_date was established.",
+            "constraints": {
+              "enum": [
+                "explicit_in_report",
+                "inferred_from_weekday",
+                "primary_doc_effective_date",
+                "other"
+              ]
+            }
+          },
+          {
+            "name": "pub_date",
+            "type": "date",
+            "description": "Publication date of the main source.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "source_pub_datetime_utc",
+            "type": "datetime",
+            "description": "Optional publication timestamp in UTC."
+          },
+          {
+            "name": "sphere",
+            "type": "string",
+            "description": "The sphere the event belongs to.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "S1_Security",
+                "S2_Finance",
+                "S3_Trade",
+                "S4_Energy_Logistics",
+                "S5_Tech_Compute",
+                "S6_Legitimacy"
+              ]
+            }
+          },
+          {
+            "name": "instrument_family",
+            "type": "string",
+            "description": "Instrument family (see instruments).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "instrument_class",
+            "type": "string",
+            "description": "Instrument class (see instruments).",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "actor",
+            "type": "string",
+            "description": "Who acted.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "actor_type",
+            "type": "string",
+            "description": "Kind of actor.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "state",
+                "institution",
+                "other"
+              ]
+            }
+          },
+          {
+            "name": "target",
+            "type": "string",
+            "description": "What was acted on.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "target_type",
+            "type": "string",
+            "description": "Kind of target.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "state",
+                "sector",
+                "asset",
+                "policy",
+                "other"
+              ]
+            }
+          },
+          {
+            "name": "region",
+            "type": "string",
+            "description": "Optional region of the resident or target.",
+            "constraints": {
+              "enum": [
+                "Americas",
+                "Europe",
+                "East_Asia",
+                "South_Asia",
+                "Southeast_Asia",
+                "Middle_East",
+                "Central_Asia",
+                "Africa",
+                "Oceania",
+                "Global"
+              ]
+            }
+          },
+          {
+            "name": "resident_entity_type",
+            "type": "string",
+            "description": "Scope of who was constrained.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "state",
+                "firm",
+                "sector",
+                "state_via_firm_asset"
+              ]
+            }
+          },
+          {
+            "name": "resident_entity_name",
+            "type": "string",
+            "description": "Name of who was constrained, at that scope.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "resident_parent_state",
+            "type": "string",
+            "description": "The state a non-state resident is clearly tied to; blank (with a note) if none."
+          },
+          {
+            "name": "summary",
+            "type": "string",
+            "description": "Neutral one- or two-line description.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "observable_O1",
+            "type": "integer",
+            "description": "Observable flag O1 (see DATA_DICTIONARY.md).",
+            "constraints": {
+              "required": true,
+              "enum": [
+                0,
+                1
+              ]
+            }
+          },
+          {
+            "name": "observable_O2",
+            "type": "integer",
+            "description": "Observable flag O2.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                0,
+                1
+              ]
+            }
+          },
+          {
+            "name": "observable_O3",
+            "type": "integer",
+            "description": "Observable flag O3.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                0,
+                1
+              ]
+            }
+          },
+          {
+            "name": "observable_O4",
+            "type": "integer",
+            "description": "Observable flag O4.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                0,
+                1
+              ]
+            }
+          },
+          {
+            "name": "observable_O5",
+            "type": "integer",
+            "description": "Observable flag O5.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                0,
+                1
+              ]
+            }
+          },
+          {
+            "name": "source_key_1",
+            "type": "string",
+            "description": "Main source.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "source_key_2",
+            "type": "string",
+            "description": "Optional second source."
+          },
+          {
+            "name": "source_reliability",
+            "type": "string",
+            "description": "Optional reliability of source_key_1.",
+            "constraints": {
+              "enum": [
+                "primary_verified",
+                "news_major",
+                "news_regional",
+                "think_tank",
+                "leaked_unverified",
+                "aggregated"
+              ]
+            }
+          },
+          {
+            "name": "primary_doc_key",
+            "type": "string",
+            "description": "Optional primary document, when distinct from the sources."
+          },
+          {
+            "name": "notes",
+            "type": "string",
+            "description": "Ambiguity, inference or scope limits."
+          },
+          {
+            "name": "thread_ids",
+            "type": "string",
+            "description": "Pipe-separated thread ids, or blank.",
+            "constraints": {
+              "pattern": "^T\\d{2}(\\|T\\d{2})*$"
+            }
+          }
+        ],
+        "primaryKey": [
+          "event_id"
+        ],
+        "foreignKeys": [
+          {
+            "fields": "window_id",
+            "reference": {
+              "resource": "windows",
+              "fields": "window_id"
+            }
+          },
+          {
+            "fields": [
+              "instrument_family",
+              "instrument_class"
+            ],
+            "reference": {
+              "resource": "instruments",
+              "fields": [
+                "instrument_family",
+                "instrument_class"
+              ]
+            }
+          },
+          {
+            "fields": "source_key_1",
+            "reference": {
+              "resource": "sources",
+              "fields": "source_key"
+            }
+          },
+          {
+            "fields": "source_key_2",
+            "reference": {
+              "resource": "sources",
+              "fields": "source_key"
+            }
+          },
+          {
+            "fields": "primary_doc_key",
+            "reference": {
+              "resource": "sources",
+              "fields": "source_key"
+            }
+          }
+        ]
+      },
+      "profile": "tabular-data-resource",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "encoding": "utf-8"
+    },
+    {
+      "name": "edges",
+      "path": "data/edges.csv",
+      "description": "Edges: a claim that a controller constrains a resident in one sphere and window, with the controller tests and the events behind it.",
+      "schema": {
+        "fields": [
+          {
+            "name": "role_edge_id",
+            "type": "string",
+            "description": "Stable edge id, R####.",
+            "constraints": {
+              "required": true,
+              "pattern": "^R\\d{4}$"
+            }
+          },
+          {
+            "name": "window_id",
+            "type": "string",
+            "description": "The window the claim is for.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "sphere",
+            "type": "string",
+            "description": "The sphere.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "S1_Security",
+                "S2_Finance",
+                "S3_Trade",
+                "S4_Energy_Logistics",
+                "S5_Tech_Compute",
+                "S6_Legitimacy"
+              ]
+            }
+          },
+          {
+            "name": "controller",
+            "type": "string",
+            "description": "The controller side.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "resident",
+            "type": "string",
+            "description": "The resident side, at the scope of the evidence.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "resident_entity_type",
+            "type": "string",
+            "description": "Scope of the resident.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "state",
+                "firm",
+                "sector",
+                "state_via_firm_asset"
+              ]
+            }
+          },
+          {
+            "name": "resident_parent_state",
+            "type": "string",
+            "description": "The state a non-state resident is clearly tied to, if any."
+          },
+          {
+            "name": "role",
+            "type": "string",
+            "description": "Status of the controller side of this edge.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "candidate",
+                "controller",
+                "contested"
+              ]
+            }
+          },
+          {
+            "name": "confidence",
+            "type": "string",
+            "description": "Confidence in the edge.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "High",
+                "Med",
+                "Low"
+              ]
+            }
+          },
+          {
+            "name": "proof_C1",
+            "type": "integer",
+            "description": "C1 imposition: an enforceable rule or action was applied.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                0,
+                1
+              ]
+            }
+          },
+          {
+            "name": "proof_C2",
+            "type": "integer",
+            "description": "C2 compliance capture: third parties changed what they did.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                0,
+                1
+              ]
+            }
+          },
+          {
+            "name": "proof_C3",
+            "type": "integer",
+            "description": "C3 net effect: a measurable cost or constraint, or a strong sign of one.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                0,
+                1
+              ]
+            }
+          },
+          {
+            "name": "circumvention_notes",
+            "type": "string",
+            "description": "Workarounds and their cost."
+          },
+          {
+            "name": "evidence_event_ids",
+            "type": "string",
+            "description": "Pipe-separated event ids behind the edge.",
+            "constraints": {
+              "pattern": "^E\\d{4}(\\|E\\d{4})*$"
+            }
+          }
+        ],
+        "primaryKey": [
+          "role_edge_id"
+        ],
+        "foreignKeys": [
+          {
+            "fields": "window_id",
+            "reference": {
+              "resource": "windows",
+              "fields": "window_id"
+            }
+          }
+        ]
+      },
+      "profile": "tabular-data-resource",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "encoding": "utf-8"
+    },
+    {
+      "name": "register",
+      "path": "data/register.csv",
+      "description": "The register: one status per controller and sphere. People promote; the checks refuse what breaks the rules.",
+      "schema": {
+        "fields": [
+          {
+            "name": "controller",
+            "type": "string",
+            "description": "The controller.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "sphere",
+            "type": "string",
+            "description": "The sphere.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "S1_Security",
+                "S2_Finance",
+                "S3_Trade",
+                "S4_Energy_Logistics",
+                "S5_Tech_Compute",
+                "S6_Legitimacy"
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "type": "string",
+            "description": "candidate, controller, or contested (a controller whose hold weakens in a later window).",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "candidate",
+                "controller",
+                "contested"
+              ]
+            }
+          },
+          {
+            "name": "first_seen_window",
+            "type": "string",
+            "description": "First window with evidence.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "promoted_window",
+            "type": "string",
+            "description": "Window of promotion to controller."
+          },
+          {
+            "name": "demoted_window",
+            "type": "string",
+            "description": "Window of demotion, if any."
+          },
+          {
+            "name": "promotion_basis_event_ids",
+            "type": "string",
+            "description": "Pipe-separated events the promotion rests on.",
+            "constraints": {
+              "pattern": "^E\\d{4}(\\|E\\d{4})*$"
+            }
+          },
+          {
+            "name": "latest_evidence_window",
+            "type": "string",
+            "description": "Latest window with evidence.",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "confidence",
+            "type": "string",
+            "description": "Confidence in the status.",
+            "constraints": {
+              "required": true,
+              "enum": [
+                "High",
+                "Med",
+                "Low"
+              ]
+            }
+          },
+          {
+            "name": "notes",
+            "type": "string",
+            "description": "Why the status is what it is."
+          }
+        ],
+        "primaryKey": [
+          "controller",
+          "sphere"
+        ],
+        "foreignKeys": [
+          {
+            "fields": "first_seen_window",
+            "reference": {
+              "resource": "windows",
+              "fields": "window_id"
+            }
+          },
+          {
+            "fields": "promoted_window",
+            "reference": {
+              "resource": "windows",
+              "fields": "window_id"
+            }
+          },
+          {
+            "fields": "demoted_window",
+            "reference": {
+              "resource": "windows",
+              "fields": "window_id"
+            }
+          },
+          {
+            "fields": "latest_evidence_window",
+            "reference": {
+              "resource": "windows",
+              "fields": "window_id"
+            }
+          }
+        ]
+      },
+      "profile": "tabular-data-resource",
+      "format": "csv",
+      "mediatype": "text/csv",
+      "encoding": "utf-8"
+    }
+  ]
+}
