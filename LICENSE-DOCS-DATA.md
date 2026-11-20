@@ -12,7 +12,7 @@ long as you give appropriate credit, link to the licence, and say whether you
 made changes.
 
 Suggested credit: "Spheres ledger, by Seb Lathangue
-(github.com/CognitiveArchitecture/spheres-ledger), CC BY 4.0."
+(github.com/Seb-the-Canadian/spheres-ledger), CC BY 4.0."
 
 The full legal text is at https://creativecommons.org/licenses/by/4.0/legalcode.
 

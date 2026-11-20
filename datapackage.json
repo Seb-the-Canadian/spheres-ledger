@@ -3,7 +3,7 @@
   "title": "Spheres ledger",
   "version": "1.0.0",
   "description": "A schema for reading power sphere by sphere: who can constrain whom, in which domain, and on what evidence. The data here is invented, to show the structure.",
-  "homepage": "https://github.com/CognitiveArchitecture/spheres-ledger",
+  "homepage": "https://github.com/Seb-the-Canadian/spheres-ledger",
   "licenses": [
     {
       "name": "CC-BY-4.0",
